@@ -1,13 +1,13 @@
-#ASTROSURFER – v3.01
-###By Griffin Shea
+# ASTROSURFER – v3.01
+### By Griffin Shea
 
-##INTRODUCTION AND PROJECT HISTORY
+## INTRODUCTION AND PROJECT HISTORY
 
 Astrosurfer began as an honours project I worked on in University in 2022 but did not complete. I dropped the course and decided to pursue other 4000-level classes in its place. The original, incomplete report for that project is available as-is in this GitHub repository titled incomplete_report.pdf.
 
 I continued to develop the project afterwords in my spare time and I intend to make a few more improvements in the near future. This document is intended as a guide to the codebase and an introduction to its architectural design. It will be a work in progress so expect incompleteness. I feel that it may provide a good reference for novice programmers interested in learning to write code for real-time 3D games. If you’re interested in this project, feel free to contact me at griffin.shea@danjo.ca with any questions or suggestions you may have.
 
-##DEPENDENCIES
+## DEPENDENCIES
 
 This project makes use of six external libraries. They are:
 -	PyGame – opens the game window and collects user input (https://www.pygame.org/)
@@ -17,7 +17,7 @@ This project makes use of six external libraries. They are:
 -	Attr – enables simpler definitions for game data properties (see Props below) (https://www.attrs.org/en/stable/)
 -	TraceMalloc – to track memory and other debugging purposes (https://docs.python.org/3/library/tracemalloc.html)
 
-##MAIN – GAME LOOP, CONTROLLER, RENDERER, AND GAME
+## MAIN – GAME LOOP, CONTROLLER, RENDERER, AND GAME
 
 ```
 	from config import *
