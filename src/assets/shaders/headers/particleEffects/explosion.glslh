@@ -1,0 +1,5 @@
+{
+	"mask": "B00I0",
+	"vert": "explosion.vert",
+	"frag": "masters//master.frag"
+}

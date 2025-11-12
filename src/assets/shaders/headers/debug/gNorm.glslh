@@ -1,0 +1,5 @@
+{
+	"mask": "B00T0",
+	"vert": "masters//vertex.glsl",
+	"frag": "engine//gNorm.frag"
+}

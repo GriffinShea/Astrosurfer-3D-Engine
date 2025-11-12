@@ -1,0 +1,4 @@
+{
+	"vert": "engine//basicSprite.vert",
+	"frag": "engine//basicSprite.frag"
+}

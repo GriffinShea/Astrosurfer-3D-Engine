@@ -1,0 +1,5 @@
+{
+	"vert": "engine//mapModelShadows.vert",
+	"geom": "engine//mapModelShadows.geom",
+	"frag": "engine//void.frag"
+}

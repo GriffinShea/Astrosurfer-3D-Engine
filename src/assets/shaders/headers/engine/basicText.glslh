@@ -1,0 +1,4 @@
+{
+	"vert": "engine//basicText.vert",
+	"frag": "engine//basicText.frag"
+}

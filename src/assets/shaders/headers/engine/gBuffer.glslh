@@ -1,0 +1,4 @@
+{
+	"vert": "engine//frameBuffer.vert",
+	"frag": "masters//gBufferMaster.frag"
+}

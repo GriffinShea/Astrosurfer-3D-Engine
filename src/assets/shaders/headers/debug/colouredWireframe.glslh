@@ -1,0 +1,6 @@
+{
+	"mask": "B00U0",
+	"vert": "masters//vertex.glsl",
+	"geom": "engine//wireframe.geom",
+	"frag": "masters//master.frag"
+}

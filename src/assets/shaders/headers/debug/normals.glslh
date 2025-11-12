@@ -1,0 +1,6 @@
+{
+	"mask": "B00TI",
+	"vert": "engine//normals.vert",
+	"geom": "engine//normals.geom",
+	"frag": "masters//master.frag"
+}

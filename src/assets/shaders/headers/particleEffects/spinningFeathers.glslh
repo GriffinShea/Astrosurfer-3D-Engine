@@ -1,0 +1,4 @@
+{
+	"vert": "spinningFeathers.vert",
+	"frag": "feather.frag"
+}

@@ -1,0 +1,6 @@
+{
+	"mask": "B00U0",
+	"vert": "engine//void.vert",
+	"geom": "engine//segment.geom",
+	"frag": "masters//master.frag"
+}
