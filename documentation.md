@@ -19,7 +19,7 @@ This project makes use of six external libraries. They are:
 
 ##MAIN – GAME LOOP, CONTROLLER, RENDERER, AND GAME
 
-``
+```
 	from config import *
 	from Renderer import Renderer
 	from Controller import Controller
@@ -50,7 +50,7 @@ This project makes use of six external libraries. They are:
 		main()
 
 	exit()
-``
+```
  
 A game loop is implemented following the pattern: input-update-draw-render. The input and render steps are handled by the static classes Controller and Renderer, while the update and draw steps are handled by an instance of Game which contains logic for a simple menu as well as level data.
 
