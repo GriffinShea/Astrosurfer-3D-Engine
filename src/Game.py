@@ -2,8 +2,8 @@ from config import *
 from Renderer import Renderer
 from Controller import Controller
 
-from Level.Level import Level
-from Level.Levels.Level1.Level1 import Level1
+from Session import Session
+from assets.levels.Level1.Level1 import Level1
 
 #game state constants
 QUIT = 0
@@ -13,7 +13,7 @@ GAME = 2
 class Game:
 	def __init__(self):
 		self.state = MENU
-		self.level = None
+		self.session = None
 		#self.menu = self.createMainMenu()
 		return
 
@@ -31,21 +31,21 @@ class Game:
 		#do different things depending on game state
 		elif self.state == MENU:
 			#self.menu.update()
-			#return --> start level
+			#return --> start session
 			if Controller.handleKey(K_RETURN, DOWN):
-				self.level = Level(Level1)
+				self.session = Session(Level1)
 				self.setState(GAME)
 				#Controller.startFocus()
-			#escape --> return to game if level else quit
+			#escape --> return to game if session else quit
 			elif Controller.handleKey(K_ESCAPE, DOWN):
-				if self.level:
+				if self.session:
 					self.setState(GAME)
 					#Controller.startFocus()
 				else:
 					self.setState(QUIT)
 		
 		elif self.state == GAME:
-			self.level.update()
+			self.session.update()
 			#escape --> open menu
 			if Controller.handleKey(K_ESCAPE, DOWN):
 				self.setState(MENU)
@@ -54,8 +54,8 @@ class Game:
 		return
 	
 	def draw(self):
-		if self.level:
-			self.level.draw()
+		if self.session:
+			self.session.draw()
 	
 		if self.state != GAME:
 			Renderer.drawFrameEffect("normalizeColour", {})

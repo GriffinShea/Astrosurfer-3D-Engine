@@ -66,7 +66,7 @@ def randVec3():
 	return glm.normalize(glm.vec3(random.random(), random.random(), random.random()))
 	
 	
-	
+#safe cheatcodes
 def robustNorm(v):
 	u = glm.normalize(v)
 	return glm.vec3() if glm.isnan(u) else u
@@ -85,8 +85,57 @@ def safeCross(a, b):
 		raise ValueError
 	return c
 	
+
+#matricies
+
+#REVISIT: these declarations must be moved
+FRAME_BUFFER_DIMS = (1280, 960)
+NEAR_CLIPPING_PLANE = 0.1
+FAR_CLIPPING_PLANE = 250
+
+def calcPerspectiveMat(fov):
+	top = glm.tan(fov) * NEAR_CLIPPING_PLANE
+	right = top * FRAME_BUFFER_DIMS[0] / FRAME_BUFFER_DIMS[1]
+	return glm.frustum(
+		-right,
+		right,
+		-top,
+		top,
+		NEAR_CLIPPING_PLANE,
+		FAR_CLIPPING_PLANE
+	)
+def calcOrthographicMat(dims):
+	return glm.ortho(
+		-dims.x, dims.x,
+		-dims.y, dims.y,
+		NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE
+	)
+def calcViewMat(pos, ori):
+	#this is a mathematically well founded incantation
+	#https://learnopengl.com/Getting-started/Camera
+	currLeft = ori * xUnit()
+	currUp = ori * yUnit()
+	currBack = ori * -zUnit()
+	
+	viewMat = glm.mat4()
+	viewMat[0][0] = currLeft[0]
+	viewMat[1][0] = currLeft[1]
+	viewMat[2][0] = currLeft[2]
+	viewMat[0][1] = currUp[0]
+	viewMat[1][1] = currUp[1]
+	viewMat[2][1] = currUp[2]
+	viewMat[0][2] = currBack[0]
+	viewMat[1][2] = currBack[1]
+	viewMat[2][2] = currBack[2]
+	viewMat = glm.translate(viewMat, -pos)
+	
+	return viewMat
+	
+	
 	
 
+	
+#normalized cheatcodes
 def ncross(a, b):
 	return glm.normalize(glm.cross(a, b))
 
@@ -106,7 +155,7 @@ def nnabsdot(a, b):
 	return abs(glm.dot(glm.normalize(a), glm.normalize(b)))
 
 
-
+#quaternions
 def rotVecToQuat(v):
 	theta = glm.length(v)
 	halfTheta = theta / 2
@@ -137,7 +186,6 @@ def transfMat(p, o, s):
 		* glm.mat4_cast(o)
 		* glm.scale(glm.mat4(), s)
 	)
-
 
 
 #for booleans: True = 1, False = -1

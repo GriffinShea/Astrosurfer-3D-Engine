@@ -5,10 +5,9 @@ from Game import Game
 
 #===================================================================================================
 #
-#	v3.01
+#	v3.02
 #
-#	@commented out grappling hook from Level1.py
-#	@discovered a problem in gBufferMaster.frag and bandaged it (see spotlight)
+#	@Refactor, refactor, refactor
 #
 #	========================================================================================
 #
