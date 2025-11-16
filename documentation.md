@@ -17,24 +17,31 @@ This project makes use of six external libraries. They are:
 ## FILE STRUCTURE
 Config, constants:
 -	Imports several libraries and defines global settings and constants used by the rest of the engine code.
+
 Glmh:
 -	A collection of mathematical functions building off of the glm library.
+
 Assets:
 -	contains all the fonts, meshes (3D models, as obj files), textures (images), and shader files (GLSL programs), needed for rendering the game. Also holds level files for building and running levels and scripts for game objects.
 
 Main:
 -	Main function to start the program.
+
 Controller:
 -	A static class that collects user input each frame using the pygame library.
+
 Renderer:
 -	Class used to render each frame using OpenGL and a pygame window.
+
 ResourceManager:
 -	Loads and stores asset data on the graphics card using OpenGL.
+
 ShaderHelper:
 -	A class used in ResourceManager to compile GLSL shader programs.
 
 Game:
 -	Handles a basic menu and wraps an instance of Session
+
 Session:
 -	Responsible for the main functions of running the game loop. Uses the files in Core. Uses MasterScript and Painter classes to update and render the game data. The code in Systems is used by MasterScript. Game data in contained by Index, which uses a dictionary to hold game objects defined by a key. Each game object is a combination of properties from the Props folder. 
 
@@ -73,10 +80,12 @@ A game loop is implemented following the pattern: input-update-draw-render. The 
 	exit()
 ```
 Controller is a static class with two main responsibilities: capture user input and store it in an accessible place. Controller.pollInput() records keypresses and mouse movements using the pygame library and processes them into a series of dictionaries to be accessed later using “getter” functions in Game.update(). 
+
 Renderer is a static class that handles the game window, clock, and drawing functions used in Game.draw(). It must be initialized by Renderer.init() which uses pygame to open a window and then sets up an OpenGL frame buffer. It also starts a clock and loads resources using another static class called ResourceManager (ResourceManager also uses the ShaderHelper class). Renderer’s drawing functions write to the frame buffer between frames and then the frame buffer is drawn to the pygame window by Renderer.flipDisplay(), which also limits the frame rate.
 
 ## GAME AND SESSION – update and render
 Game is responsible for wrapping an instance of Session, which controls the game/simulation/level data, and implementing a basic menu (starting the game, quitting, pausing, and restarting). 
+
 When you run main.py and press RETURN, a Session object is instantiated in Game with a LevelFile. A LevelFile is a class stored in assets/levels with three static references (Builder, MainScript, Canvas) which are passed to Session. Session creates an Index and populates it using the builder.build() method.
 ```
 class Session:
@@ -97,13 +106,16 @@ It also creates an empty Index to contain all of the game data, which is organiz
 -	Index[type] returns a list of all props of the given type. 
 -	Index[type1, type2, etc.] returns a list of “partial objects”: tuples of key-matched props of type1, type2, etc.. This function implements a dependency requirement by which all objects with a prop of type1 must have a prop of type2, type3, etc..
 -	Index.match(type1, type2, …) returns a list of tuples of props with all given types, with no dependency requirement.
+
 The session begins to update immediately unless ESCAPE is pressed to “pause” Game. When Game is “paused” the session is drawn with a filter. In the update function of session, there is a second “pause” activated by pressing F which simply freezes the game with no filter and allows you to press L to see one frame run.
+
 Session update then calls the MainScript set by the LevelFile and then proceeds to run the MasterScript:
 ```
 self.mainScript.run(self, self.index)
 MasterScript.run(self.index, Renderer.dTime)
 ```
 A MainScript controls the game first to implement user input and any other high-level logic needed to run the game including changing levels, i.e., changing the builder, mainScript, and canvas of the session.
+
 MasterScript is the meat and potatoes of the engine including ten discrete steps:
 ```
 class MasterScript:
@@ -142,7 +154,9 @@ class MasterScript:
 8.	*Execute Postcollide scripts for each object involved in each collision.
 9.	*Execute PostScripts in the index.
 10.	Remove any deleted keys from the index.
+
 Steps marked with an asterisk execute scripts written and added to objects as props. 
+
 The draw step is implemented by a call to the Painter class which draws all game objects in the index and then calls the Canvas from the LevelFile to add any final touches and draw the graphical user interface. Painter uses the Renderer to perform these functions.
 
 ## REFLECTION – room for improvement
