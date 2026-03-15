@@ -2,14 +2,16 @@
 
 in vec2 texInt;
 
-uniform sampler2D texture;
+uniform sampler2D tex;
+
+layout(location = 0) out vec4 gCol;
 
 void main()
 {
 
-	gl_FragColor = texture2D(texture, texInt);
-	if (gl_FragColor.r < 0.25) { discard; }
-	gl_FragColor.a = 0;
+	gCol = texture(tex, texInt);
+	if (gCol.r < 0.25) { discard; }
+	gCol.a = 0;
 
 	return;
 }

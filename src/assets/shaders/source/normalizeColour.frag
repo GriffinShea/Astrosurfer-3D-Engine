@@ -4,8 +4,10 @@ in vec2 texInt;
 
 uniform sampler2D frame;
 
+layout(location = 0) out vec4 gCol;
+
 void main() 
 {
-	gl_FragColor = normalize(texture2D(frame, texInt));
+	gCol = normalize(texture(frame, texInt));
 	return;
 }

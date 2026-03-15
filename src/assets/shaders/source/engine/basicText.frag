@@ -8,17 +8,19 @@ uniform int character;
 uniform vec3 colour;
 uniform float alpha;
 
+layout(location = 0) out vec4 gCol;
+
 void main() 
 {
-	gl_FragColor = texture2D(
+	gCol = texture(
 		bitmap, vec2(
 			(texInt.x + mod(character, bitmapDims.x)) / bitmapDims.x,
 			1 + (texInt.y - 1 - floor(character / bitmapDims.x)) / bitmapDims.y
 		)
 	);
 	
-	if (gl_FragColor.xyz != vec3(0, 0, 0)) {
-		gl_FragColor = vec4(colour, alpha);
+	if (gCol.xyz != vec3(0, 0, 0)) {
+		gCol = vec4(colour, alpha);
 	} else {
 		discard;
 	}

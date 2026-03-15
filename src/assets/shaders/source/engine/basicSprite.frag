@@ -5,9 +5,11 @@ in vec2 texInt;
 uniform sampler2D sprite;
 uniform float alpha;
 
+layout(location = 0) out vec4 gCol;
+
 void main() 
 {
-	gl_FragColor = texture2D(sprite, texInt);
-	gl_FragColor.a = min(gl_FragColor.a, alpha);
+	gCol = texture(sprite, texInt);
+	gCol.a = min(gCol.a, alpha);
 	return;
 }

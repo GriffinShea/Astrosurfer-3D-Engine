@@ -10,6 +10,10 @@ uniform mat4 projMat;
 uniform vec3 pos0;
 uniform vec3 pos1;
 
+out vec3 posInt;
+out vec3 normInt;
+out vec3 viewPosInt;
+
 void main()
 {	
 	gl_Position = projMat * viewMat * vec4(pos0, 1.0);

@@ -9,6 +9,10 @@ uniform mat4 worldMat;
 uniform mat4 viewMat;
 uniform mat4 projMat;
 
+out vec3 posInt;
+out vec3 normInt;
+out vec3 viewPosInt;
+
 out vec2 texInt;
 
 float rngFloat(float last) {
@@ -19,6 +23,9 @@ float rngFloat(float last) {
 void main() {
 	
 	vec4 worldPos = worldMat * vec4(posXYZ, 1);
+	posInt = worldPos.xyz;
+	normInt = mat3(transpose(inverse(viewMat * worldMat))) * normXYZ;
+	viewPosInt = (viewMat * worldPos).xyz;
 	
 	//jellification calculation
 	float lastRNG = rngFloat(0);

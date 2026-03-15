@@ -22,7 +22,7 @@ class ArrowFactory:
 					True, relOri=glm.angleAxis(-glm.pi()/2, glmh.xUnit())
 				),
 				PreScript(cls.fixArrowPos),
-				Rend(True, "unLitTexture", {"texture": "eyeball", "uvScale": glm.vec2(1)}),
+				Rend(True, "unLitTexture", {"tex": "eyeball", "uvScale": glm.vec2(1)}),
 				Model("cylinder", False)
 			]
 		)
@@ -36,7 +36,7 @@ class ArrowFactory:
 					glm.vec3(shaftTransf.scale.x, shaftTransf.scale.y / 2, shaftTransf.scale.z),
 					parent=index.get(shaftkey)[Transf]
 				),
-				Rend(True, "unLitTexture", {"texture": "eyeball", "uvScale": glm.vec2(1)}),
+				Rend(True, "unLitTexture", {"tex": "eyeball", "uvScale": glm.vec2(1)}),
 				Model("pyr", False)
 			]
 		)

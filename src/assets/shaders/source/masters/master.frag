@@ -2,9 +2,9 @@
 
 #define MAX_LIGHTS 16	//duplicated in config and other masters
 
-layout(location = 0) out vec4 gPos;
-layout(location = 1) out vec4 gNorm;
-layout(location = 2) out vec4 gCol;
+layout(location = 0) out vec4 gCol;
+layout(location = 1) out vec4 gPos;
+layout(location = 2) out vec4 gNorm;
 layout(location = 3) out vec4 gExtra;
 
 $PA//(P) Phong shading
@@ -32,7 +32,7 @@ $CIin vec3 colourInt;
 $CV//(CV) vertex noise colour
 $CVin vec3 vertNoiseInt;
 $CT//(CT) texture colour
-$CTuniform sampler2D texture;
+$CTuniform sampler2D tex;
 $CTuniform vec2 uvScale = vec2(1);
 $CU//(CU) uniform colour
 $CUuniform vec3 colour;
@@ -65,7 +65,7 @@ $CI	gCol.rgb = colourInt;
 $CV	//(CV) vertex noise colour interpolated from vertex
 $CV	gCol.rgb = vertNoiseInt;
 $CT	//(CT) texture colour
-$CT	gCol.rgb = texture2D(texture, uvScale * texInt).rgb;
+$CT	gCol.rgb = texture(tex, uvScale * texInt).rgb;
 $CU	//(CU) uniform colour
 $CU	gCol.rgb = colour;
 $CS	//(CS) static colour

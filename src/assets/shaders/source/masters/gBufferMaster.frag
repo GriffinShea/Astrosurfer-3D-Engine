@@ -33,6 +33,8 @@ $SMuniform sampler2DArray shadowMaps;
 //(FE) fog
 $FEuniform vec3 fogColour;
 
+layout(location = 0) out vec4 gCol;
+
 //
 
 $SMbool outsideDirLightShadow(int i, int mapNum, vec3 worldPos) {
@@ -55,9 +57,9 @@ $SM}
 
 void main() {
 
-	vec4 pos = texture(gBuffer, vec3(texInt, 0));
-	vec4 norm = texture(gBuffer, vec3(texInt, 1));
-	vec4 col = texture(gBuffer, vec3(texInt, 2));
+	vec4 col = texture(gBuffer, vec3(texInt, 0));
+	vec4 pos = texture(gBuffer, vec3(texInt, 1));
+	vec4 norm = texture(gBuffer, vec3(texInt, 2));
 	vec4 extra = texture(gBuffer, vec3(texInt, 3));
 
 $PA	//(PA) Phong shading (fragment by fragment shading)
@@ -117,7 +119,7 @@ $LA
 $LA	//if col.a is 1 apply the lighting model, otherwise set frag colour to albedo
 $LA	if (col.a == 1) {
 $LA		//apply ambient lighting
-$LA		gl_FragColor.rgb = globalAmbience * albedo;
+$LA		gCol.rgb = globalAmbience * albedo;
 $LA		vec3 reflectionColour;
 $SM		int mapNum = 0;
 $PA		for (int i = 0; i < lightCount; i++) {
@@ -129,20 +131,20 @@ $SM				|| lightTypes[i] == 3 && outsideSpotLightShadow(i, mapNum++, worldPos)
 $SM	//			|| lightTypes[i] == 4 && outsideOmniLightShadow(i, mapNum++, worldPos)
 $SM			) {
 $LA				reflectionColour = lightIntensities[i] * lightColours[i] * albedo;
-$LA				gl_FragColor.rgb += diffuseCalcs[i] * diffuseMat * reflectionColour;
-$LA				gl_FragColor.rgb += specularCalcs[i] * specularMat * reflectionColour;
+$LA				gCol.rgb += diffuseCalcs[i] * diffuseMat * reflectionColour;
+$LA				gCol.rgb += specularCalcs[i] * specularMat * reflectionColour;
 $SM			}
 $LA		}
 $LA	} else {
-$LA		gl_FragColor.rgb = albedo;
+$LA		gCol.rgb = albedo;
 $LA	}
-$LA	gl_FragColor.a = 1;
+$LA	gCol.a = 1;
 	
 $NL	//(NL) no lighting
-$NL	gl_FragColor.rgba = vec4(col.rgb, 1);
+$NL	gCol.rgba = vec4(col.rgb, 1);
 	
 $FE	//(FE) mix in fog colour
-$FE	gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColour, extra.r);
+$FE	gCol.rgb = mix(gCol.rgb, fogColour, extra.r);
 	
 	return;
 }

@@ -54,7 +54,7 @@ class RagdollFactory:
 					glm.vec3(0, 0, 5), glm.quat(), glm.vec3(0.25),
 					parent=index.get(keys["head"])[Transf]
 				),
-				Light(glm.vec3(1, 1, 0.8), 1/2),
+				Light(glm.vec3(1, 1, 0.25), 1/2),
 				#PointLight(),
 				SpotLight(glmh.zUnit(), glm.vec2(30, 90)),
 			]
@@ -204,7 +204,7 @@ class RagdollFactory:
 					pos * scale, glm.quat(), glm.vec3(scale),
 					parent=index.get(dadkey)[Transf]
 				),
-				Rend(True, "texture", {"texture": "multpaleta", "uvScale": glm.vec2(1)}),
+				Rend(True, "texture", {"tex": "multpaleta", "uvScale": glm.vec2(1)}),
 				Model(mesh, False)
 			]
 		)

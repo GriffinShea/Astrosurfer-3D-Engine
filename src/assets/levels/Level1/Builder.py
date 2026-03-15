@@ -32,13 +32,26 @@ from Core.Props.Graphics.Lights import DirLight
 class Builder:
 	@classmethod
 	def build(cls, index):
+		#add a light
+		index.createObj(
+			"sun",
+			[
+				Transf(
+					glm.vec3(0, 0, 0),
+					glm.angleAxis(45, -glmh.xUnit()),
+					glm.vec3()
+				),
+				Light(glm.vec3(0.75, 0.75, 1), 1),
+				DirLight(100, 100),
+			]
+		)
 		
 		#background
 		index.createObj(
 			"background",
 			[
 				Transf(glm.vec3(0, 500, 16), glm.quat(), glm.vec3(1024, 2048, 1)),
-				Rend(True, "unLitTexture", {"texture": "purpleSky", "uvScale": glm.vec2(17, 33)}),
+				Rend(True, "unLitTexture", {"tex": "purpleSky", "uvScale": glm.vec2(17, 33)}),
 				Model("plane", False)
 			]
 		)
@@ -48,7 +61,7 @@ class Builder:
 			[
 				Transf(glm.vec3(0, -10, 0), glm.quat(), glm.vec3(10)),
 				Coll(COLLBOX, COLLTERRAIN),
-				Rend(True, "texture", {"texture": "play4keeps", "uvScale": glm.vec2(1)}),
+				Rend(True, "texture", {"tex": "play4keeps", "uvScale": glm.vec2(1)}),
 				Model("cube", True)
 			]
 		)
@@ -120,7 +133,7 @@ class Builder:
 				Rigidbody(60000, 0, glm.pi()/16, 0.3, suffersGravity=False),
 				Jet(glm.vec3(0, 1, 0), 0),
 				
-				Rend(True, "texture", {"texture": "play4keeps", "uvScale": glm.vec2(8)}),
+				Rend(True, "texture", {"tex": "play4keeps", "uvScale": glm.vec2(8)}),
 				Model("cylinder", True),
 			]
 		)
@@ -138,7 +151,7 @@ class Builder:
 				),
 				Coll(COLLCYLINDER, COLLGHOST),
 				
-				Rend(True, "texture", {"texture": "tesseract", "uvScale": glm.vec2(1)}),
+				Rend(True, "texture", {"tex": "tesseract", "uvScale": glm.vec2(1)}),
 				Model("cylinder", True)
 			]
 		)
@@ -156,7 +169,7 @@ class Builder:
 				),
 				Coll(COLLCYLINDER, COLLGHOST),
 				
-				Rend(True, "texture", {"texture": "tesseract", "uvScale": glm.vec2(1)}),
+				Rend(True, "texture", {"tex": "tesseract", "uvScale": glm.vec2(1)}),
 				Model("cylinder", True)
 			]
 		)
@@ -168,7 +181,7 @@ class Builder:
 					parent=index.get(rocketkey)[Transf]
 				),
 				
-				Rend(True, "unLitTexture", {"texture": "eyeball", "uvScale": glm.vec2(1)}),
+				Rend(True, "unLitTexture", {"tex": "eyeball", "uvScale": glm.vec2(1)}),
 				Model("pyr", False)
 			]
 		)

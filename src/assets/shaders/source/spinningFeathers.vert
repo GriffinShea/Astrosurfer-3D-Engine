@@ -11,6 +11,10 @@ uniform mat4 projMat;
 uniform float time;
 uniform float seed;
 
+out vec3 posInt;
+out vec3 normInt;
+out vec3 viewPosInt;
+
 out vec2 texInt;
 
 
@@ -58,7 +62,7 @@ void main()
 	float circleStart = lastRng - 0.5;
 	lastRng = rngFloat(lastRng);
 	float circleDir = lastRng - 0.5;
-	gl_Position = yAxisRotation((circleStart + sign(circleDir) * time) * 3.14159 * 2) * vec4(randomPosition * 3, 1.0);
+	mat4 rot1 = yAxisRotation((circleStart + sign(circleDir) * time) * 3.14159 * 2);
     
 	//rotates the feather around its own axis
 	lastRng = rngFloat(lastRng);
@@ -66,10 +70,17 @@ void main()
 	lastRng = rngFloat(lastRng);
 	float spinDir = lastRng - 0.5;
 	lastRng = rngFloat(lastRng);
-	gl_Position = yAxisRotation((spinStart + sign(spinDir) * time) * 3.14159 * 2) * vec4(posXYZ, 1) + gl_Position;
+	mat4 rot2 = yAxisRotation((spinStart + sign(spinDir) * time) * 3.14159 * 2);
+	
+	vec4 partPos = rot2 * vec4(posXYZ, 1) + rot1 * vec4(randomPosition * 3, 1.0);
     
 	//determine final position
-	gl_Position = projMat * viewMat * worldMat * gl_Position;
+	gl_Position = projMat * viewMat * worldMat * partPos;
+	
+	vec4 worldPos = worldMat * partPos;
+	posInt = worldPos.xyz;
+	normInt = mat3(transpose(inverse(viewMat * worldMat))) * (rot1 * rot2 * vec4(normXYZ, 1)).xyz;
+	viewPosInt = (viewMat * worldPos).xyz;
 	
 	//determine which feather texture to use on the atlas
 	int featherNum = int(floor(rngFloat(lastRng) * 9));

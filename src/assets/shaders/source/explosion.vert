@@ -11,6 +11,10 @@ uniform mat4 projMat;
 uniform float time;
 uniform float seed;
 
+out vec3 posInt;
+out vec3 normInt;
+out vec3 viewPosInt;
+
 out vec3 colourInt;
 
 //this generates a psuedo-random number depending on instance id and emission birth seed
@@ -36,9 +40,14 @@ void main()
 	float rngD = lastRng;
 
 	//set position
-	vec3 randomPosition = -normalize(vec3((rngX*2-1), (rngY*2-1), (rngZ*2-1))) * rngD;
-	gl_Position = vec4(randomPosition * 3 * (1 - 1 / pow(2, 3 * time)), 1.0);
-    gl_Position = projMat * viewMat * worldMat * gl_Position;
+	vec3 randomPosition = posXYZ - normalize(vec3((rngX*2-1), (rngY*2-1), (rngZ*2-1))) * rngD;
+	vec4 partPos = vec4(randomPosition * 3 * (1 - 1 / pow(2, 3 * time)), 1.0);
+    gl_Position = projMat * viewMat * worldMat * partPos;
+	
+	vec4 worldPos = worldMat * partPos;
+	posInt = worldPos.xyz;
+	normInt = mat3(transpose(inverse(viewMat * worldMat))) * normXYZ;
+	viewPosInt = (viewMat * worldPos).xyz;
 	
 	//calculate colour
 	//colourInt = vec4(1, 1-time/6, 0, (1-time/6)*rngD);

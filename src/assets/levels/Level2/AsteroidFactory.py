@@ -48,7 +48,7 @@ class AsteroidFactory:
 				PreScript(cls.fixZPos),
 				Timer(8, deleteOnCycle=True),
 				
-				Rend(True, "texture", {"texture": texture, "uvScale": glm.vec2(1)}),
+				Rend(True, "texture", {"tex": texture, "uvScale": glm.vec2(1)}),
 				Model(#mesh, True),
 					{
 						COLLSPHERE: "sphere",

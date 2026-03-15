@@ -52,10 +52,28 @@ class ShaderHelper:
 			else:
 				shaderString = open("assets//shaders//source//" + shaderDict[glslType]).read()
 			uniformDefs = uniformDefs | ShaderHelper.parseUniformDefs(shaderString)
+			
+			if DEBUG_PRINT_SHADERS:
+				print("Compiling ", shaderDict[glslType], " with mask '", mask, "':", sep="")
 			shader = shaders.compileShader(shaderString, shaderTypes[glslType])
+			if DEBUG_PRINT_SHADERS:
+				print("Compile status =", gl.glGetShaderiv(shader, gl.GL_COMPILE_STATUS), "(1=success, 0=failure)")
+			
 			shadersList.append(shader)
 		
-		program = shaders.compileProgram(*shadersList)
+		try:
+			program = shaders.compileProgram(*shadersList, validate=True)
+			if DEBUG_PRINT_SHADERS:
+				print("Shader program compile status:", gl.glGetProgramiv(program, gl.GL_VALIDATE_STATUS), ",", gl.glGetProgramiv(program, gl.GL_LINK_STATUS), "(1=success, 0=failure)")
+				print()
+		except gl.shaders.ShaderValidationError as e:
+			print("ShaderValidationError:", e)
+			program = shaders.compileProgram(*shadersList, validate=False)
+			if DEBUG_PRINT_SHADERS:
+				print(gl.glGetProgramInfoLog(program))
+				print()
+			return (0, uniformDefs)
+		
 		return (program, uniformDefs)
 	
 	@staticmethod
