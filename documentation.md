@@ -11,7 +11,7 @@ This project makes use of six external libraries. They are:
 -	PyGame – opens the game window and collects user input (https://www.pygame.org/)
 -	PyOpenGL – 3D rendering using the GPU (https://mcfletch.github.io/pyopengl/documentation/index.html)
 -	PyGLM – for vector, matrix, and quaternion mathematical operations (https://pypi.org/project/pyglm/)
--	Numpy – used in Renderer and ResourceManager classes to load data into OpenGL (https://pypi.org/project/numpy/)
+-	~~Numpy – used in Renderer and ResourceManager classes to load data into OpenGL (https://pypi.org/project/numpy/)~~
 -	Attr – enables simpler definitions for game data properties (see Props below) (https://www.attrs.org/en/stable/)
 -	TraceMalloc – to track memory and other debugging purposes (https://docs.python.org/3/library/tracemalloc.html)
 

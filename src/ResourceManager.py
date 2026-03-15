@@ -1,6 +1,9 @@
 from config import *
 from ShaderHelper import ShaderHelper
 
+#REVISIT: not sure why this has to be here when its in config
+import ctypes
+
 class ResourceManager:
 	meshes = {}
 	unloadedMeshes = set()
@@ -21,7 +24,6 @@ class ResourceManager:
 		#these meshes are all CCW wrapped and square like triangle meshes
 		#i.e., the first vertex is the same on both triangles for each quad
 		
-		cls.meshes["nullElement"] = createNullElement()
 		cls.meshes["frame"] = createFrame()
 		cls.meshes["square"] = createSquare()
 		cls.meshes["quadSquare"] = createQuadSquare()
@@ -30,6 +32,7 @@ class ResourceManager:
 		cls.meshes["cube"] = createCube()
 		cls.meshes["room"] = createRoom()				#room is a cube with inverted faces
 		cls.meshes["dieCube"] = createDieCube()
+		cls.meshes["nullElement"] = createNullElement()
 		
 		#REVISIT: sphere here because loading astronauta corrupted dolphin's data somehow
 		cls.loadMeshTris("pyr")
@@ -188,7 +191,7 @@ class ResourceManager:
 		with open("assets//fonts//" + fontName) as fontFile:
 			font = json.load(fontFile)
 			cls.textures[font["bitmap"]] = cls.loadTexture("bitmaps//" + font["bitmap"] + ".bmp")
-			return (font["bitmap"], glm.vec2(font["bitmapDims"]), glm.vec2(font["glyphDims"]))
+			return (font["bitmap"], glm.ivec2(font["bitmapDims"]), glm.ivec2(font["glyphDims"]))
 	
 	@classmethod
 	def loadTexture(cls, fileName, transparentColour=None):
@@ -303,49 +306,41 @@ class ResourceManager:
 							else:
 								verticies.append(0)
 								verticies.append(0)
-						triangles.append(verticiesDict[vertexString])
-		
-		verticies = numpy.array(verticies, dtype=numpy.float32)
-		triangles = numpy.array(triangles, dtype=numpy.uint32)
-		
-		vbo = gl.glGenBuffers(1)
-		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-		gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
-		
-		ebo = gl.glGenBuffers(1)
-		gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-		gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+						triangles.append(int(verticiesDict[vertexString]))
+			
+			buffers = bindBuffers(verticies, triangles)
 		
 		cls.meshes[newName] = (
-			vbo,
+			buffers[0],
 			8,
 			((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)),
-			ebo,
+			buffers[1],
 			len(triangles),
 			3
 		)
 		return
-	
-def createNullElement():
-	verticies = (
-		0
-	)
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
+
+def bindBuffers(verticies, triangles):
+	varray = glmh.makeArray(verticies, ctypes.c_float)
+	tarray = glmh.makeArray(triangles, ctypes.c_uint)
+
 	vbo = gl.glGenBuffers(1)
 	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
-	
-	triangles = (
-		0, 0, 0
-	)
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
+	gl.glBufferData(gl.GL_ARRAY_BUFFER, varray, gl.GL_STATIC_DRAW)
 	
 	ebo = gl.glGenBuffers(1)
 	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, tarray, gl.GL_STATIC_DRAW)
 	
-	return (vbo, 1, [(1, gl.GL_FLOAT)], ebo, 1, 3)
+	return (vbo, ebo)
+	
+def createNullElement():
+	verticies = [0]
+	triangles = [0, 0, 0]
+	
+	buffers = bindBuffers(verticies, triangles)
+	
+	return (buffers[0], 1, [(1, gl.GL_FLOAT)], buffers[1], 1, 3)
 
 def createFrame():
 	verticies = (
@@ -354,23 +349,15 @@ def createFrame():
 		-1, 1, 0, 1,
 		1, 1, 1, 1
 	)
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = (
 		1, 2, 0,
 		1, 3, 2
 	)
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 4, ((2, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 2, 3)
+	return (buffers[0], 4, ((2, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 2, 3)
 
 def createSquare():
 	verticies = (
@@ -379,23 +366,15 @@ def createSquare():
 		-0.5, 0.5, 0, 0, 0, -1, 0, 1,
 		0.5, 0.5, 0, 0, 0, -1, 1, 1
 	)
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = (
 		1, 2, 0,
 		1, 3, 2
 	)
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 2, 3)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 2, 3)
 
 def createQuadSquare():
 	verticies = (
@@ -404,22 +383,14 @@ def createQuadSquare():
 		0.5, 0.5, 0, 0, 0, -1, 1, 1,
 		-0.5, 0.5, 0, 0, 0, -1, 0, 1
 	)
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	quads = (
 		0, 1, 2, 3
 	)
-	quads = numpy.array(quads, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, quads.nbytes, quads, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, quads)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 1, 4)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 1, 4)
 
 def createPlane():
 	verticies = (
@@ -432,11 +403,6 @@ def createPlane():
 		-0.5, 0.5, 0, 0, 0, 1, 0, 1,
 		0.5, 0.5, 0, 0, 0, 1, 1, 1
 	)
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = (
 		1, 2, 0,
@@ -444,13 +410,10 @@ def createPlane():
 		6, 5, 4,
 		6, 7, 5
 	)
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 4, 3)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 4, 3)
 
 def createSphere(h, v):	#h = horizontal slices, v = vertical slices
 	verticies = []
@@ -472,11 +435,6 @@ def createSphere(h, v):	#h = horizontal slices, v = vertical slices
 			verticies = verticies + [abs(theta/(glm.pi()) - 1), sliceY+0.5]
 	for i in range(v):
 		verticies = verticies + [0, -0.5, 0, 0, -1, 0, i/v+1/(2*v), 0]
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = []
 	for i in range(v):
@@ -487,13 +445,10 @@ def createSphere(h, v):	#h = horizontal slices, v = vertical slices
 			triangles = triangles + [(v+1)*i+j+v+1, (v+1)*(i+1)+j+v, (v+1)*(i+1)+j+v+1]
 	for i in range(v):
 		triangles = triangles + [h*(v+1)+i, h*(v+1)+i-1, (h+1)*(v+1)+i-1]
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 2*h*v, 3)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 2*h*v, 3)
 
 def createCylinder(v):	#v = vertical slices
 	verticies = []
@@ -513,11 +468,6 @@ def createCylinder(v):	#v = vertical slices
 		verticies = verticies + [glm.cos(i*glm.pi()/v*2)/2, -0.5, glm.sin(i*glm.pi()/v*2)/2, 0, -1, 0, i/v, 0]
 	for i in range(v):
 		verticies = verticies + [0, -0.5, 0, 0, -1, 0, i/v+1/(2*v), 1]
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = []
 	for i in range(v):
@@ -527,13 +477,10 @@ def createCylinder(v):	#v = vertical slices
 		triangles = triangles + [3*(v+1)+i-1, 3*(v+1)+i, 2*(v+1)+i]
 	for i in range(v):
 		triangles = triangles + [5*(v+1)+i-1, 4*(v+1)+i, 4*(v+1)+i-1]
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 4*v, 3)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 4*v, 3)
 
 def createCube():
 	positions = (
@@ -577,11 +524,6 @@ def createCube():
 		verticies = verticies + [positions[faces[i]].x, positions[faces[i]].y, positions[faces[i]].z]
 		verticies = verticies + [normals[int(i/4)].x, normals[int(i/4)].y, normals[int(i/4)].z]
 		verticies = verticies + [texCoords[i%4].x, texCoords[i%4].y]
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = []
 	for i in range(6):
@@ -589,13 +531,10 @@ def createCube():
 			4*i+1, 4*i+2, 4*i,
 			4*i+1, 4*i+3, 4*i+2
 		]
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 12, 3)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 12, 3)
 
 def createRoom():
 	positions = (
@@ -639,11 +578,6 @@ def createRoom():
 		verticies = verticies + [positions[faces[i]].x, positions[faces[i]].y, positions[faces[i]].z]
 		verticies = verticies + [normals[int(i/4)].x, normals[int(i/4)].y, normals[int(i/4)].z]
 		verticies = verticies + [texCoords[i%4].x, texCoords[i%4].y]
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = []
 	for i in range(6):
@@ -651,13 +585,10 @@ def createRoom():
 			4*i+2, 4*i+1, 4*i,
 			4*i+2, 4*i+3, 4*i+1
 		]
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 12, 3)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 12, 3)
 
 def createDieCube():
 	positions = (
@@ -713,11 +644,6 @@ def createDieCube():
 		]
 		verticies = verticies + [normals[int(i/4)].x, normals[int(i/4)].y, normals[int(i/4)].z]
 		verticies = verticies + [texCoords[posCoordIndicies[i][1]].x, texCoords[posCoordIndicies[i][1]].y]
-	verticies = numpy.array(verticies, dtype=numpy.float32)
-	
-	vbo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-	gl.glBufferData(gl.GL_ARRAY_BUFFER, verticies.nbytes, verticies, gl.GL_STATIC_DRAW)
 	
 	triangles = []
 	for i in range(6):
@@ -725,10 +651,7 @@ def createDieCube():
 			4*i+1, 4*i+2, 4*i,
 			4*i+1, 4*i+3, 4*i+2
 		]
-	triangles = numpy.array(triangles, dtype=numpy.uint32)
 	
-	ebo = gl.glGenBuffers(1)
-	gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo)
-	gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, triangles.nbytes, triangles, gl.GL_STATIC_DRAW)
+	buffers = bindBuffers(verticies, triangles)
 	
-	return (vbo, 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), ebo, 12, 3)
+	return (buffers[0], 8, ((3, gl.GL_FLOAT), (3, gl.GL_FLOAT), (2, gl.GL_FLOAT)), buffers[1], 12, 3)

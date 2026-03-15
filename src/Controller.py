@@ -1,5 +1,19 @@
 from config import *
 
+CONTROLSMAPPING = {
+	"DIR_N": K_w,
+	"DIR_E": K_d,
+	"DIR_S": K_s,
+	"DIR_W": K_a,
+	
+	"FREEZE": K_f,
+	"STEP_FRAME": K_l,
+	
+	"EXIT": K_ESCAPE,
+	"ENTER": K_RETURN,
+	"QUIT": K_DELETE,
+}
+
 class Controller:
 	inputDict = {}
 	inputDict["CLOSE"] = False
@@ -7,6 +21,9 @@ class Controller:
 	inputDict["MOUSE_POS"] = (0, 0)
 	inputDict["MOUSE_MOVE"] = (0, 0)
 	inputDict["MOUSE_POS"] = (0, 0)
+	inputDict["CONTROLS"] = {}
+	for key in CONTROLSMAPPING.keys():
+		inputDict["CONTROLS"][key] = OFF
 	focus = False
 	firstFrameFocus = False
 	
@@ -36,8 +53,7 @@ class Controller:
 				-cls.inputDict["MOUSE_MOVE"][1]*2/WINDOW_DIMS[1]
 			)
 		
-		#get basic input from pygame
-		cls.inputDict["CLOSE"] = False
+		#get mouse input from pygame
 		cls.inputDict["MOUSE_BUTTONS"] = [
 			*list(pygame.mouse.get_pressed()),
 			OFF,
@@ -47,8 +63,20 @@ class Controller:
 			ON * (cls.inputDict["MOUSE_BUTTONS"][M_5] == DOWN
 				or cls.inputDict["MOUSE_BUTTONS"][M_5] == ON)
 		]
-		cls.inputDict["KEYBOARD"] = list(pygame.key.get_pressed())
-
+		
+		#parse keypresses (from pygame) into controls events (ON, OFF, UP, DOWN)
+		for key in CONTROLSMAPPING.keys():
+			if pygame.key.get_pressed()[CONTROLSMAPPING[key]]:
+				if cls.inputDict["CONTROLS"][key] == UP or cls.inputDict["CONTROLS"][key] == OFF:
+					cls.inputDict["CONTROLS"][key] = DOWN
+				else:
+					cls.inputDict["CONTROLS"][key] = ON
+			else:
+				if cls.inputDict["CONTROLS"][key] == DOWN or cls.inputDict["CONTROLS"][key] == ON:
+					cls.inputDict["CONTROLS"][key] = UP
+				else:
+					cls.inputDict["CONTROLS"][key] = OFF
+		
 		#get input events from pygame
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -58,11 +86,6 @@ class Controller:
 				cls.inputDict["MOUSE_BUTTONS"][event.button-1] = UP
 			elif event.type == pygame.MOUSEBUTTONDOWN:
 				cls.inputDict["MOUSE_BUTTONS"][event.button-1] = DOWN
-
-			elif event.type == pygame.KEYDOWN:
-				cls.inputDict["KEYBOARD"][event.key] = DOWN
-			elif event.type == pygame.KEYUP:
-				cls.inputDict["KEYBOARD"][event.key] = UP
 			
 		return
 	
@@ -107,18 +130,20 @@ class Controller:
 
 	@classmethod
 	def checkKey(cls, key):
-		return cls.inputDict["KEYBOARD"][key]
+		return cls.inputDict["CONTROLS"][key]
 
 	@classmethod
 	def handleKey(cls, key, state):
+		if key not in CONTROLSMAPPING:
+			raise ValueError("The command '" + str(key) + "' is not assigned in CONTROLSMAPPING.")
 		if state == ON or state == OFF:
 			raise ValueError("handleKeyEvent() may only take DOWN or UP for state.")
 		
-		if cls.inputDict["KEYBOARD"][key] == state:
+		if cls.inputDict["CONTROLS"][key] == state:
 			if state == DOWN:
-				cls.inputDict["KEYBOARD"][key] = ON
+				cls.inputDict["CONTROLS"][key] = ON
 			else:
-				cls.inputDict["KEYBOARD"][key] = OFF
+				cls.inputDict["CONTROLS"][key] = OFF
 			return True
 		else:
 			return False

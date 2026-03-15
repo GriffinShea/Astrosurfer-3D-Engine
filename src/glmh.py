@@ -11,6 +11,20 @@ INF = 1000000	#REVISIT: can we use infinity?????
 #transforms from camera space to texture space ( [-1,1] --> [0,1] )
 CAM_TO_TEX_MAT = glm.scale(glm.translate(glm.mat4(), glm.vec3(0.5)), glm.vec3(0.5))
 
+def makeArray(values, ctype):
+	if not values:
+		return (ctype * 0)()
+	values = collapseDimToOne(values)
+	return (ctype * len(values))(*values)
+
+def collapseDimToOne(values):
+	if hasattr(values, '__iter__'):
+		if hasattr(values[0], '__iter__'):
+			return sum([list(collapseDimToOne(v)) for v in values], [])
+		else:
+			return values
+	else:
+		return [values]
 
 def copy(v):
 	return glm.vec3(v.x, v.y, v.z)

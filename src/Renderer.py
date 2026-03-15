@@ -1,6 +1,9 @@
 from config import *
 from ResourceManager import ResourceManager
 
+#REVISIT: not sure why this has to be here when its in config
+import ctypes
+
 class Renderer:
 	currentShader = None
 	boundTextures = 0
@@ -44,7 +47,8 @@ class Renderer:
 		gl.glEnable(gl.GL_DEPTH_TEST)
 		gl.glDepthFunc(gl.GL_LEQUAL)
 		#setup blend function
-		gl.glDisable(gl.GL_BLEND)
+		gl.glEnable(gl.GL_BLEND)
+		#gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_DST_COLOR)	#INTERESTING EFFECT
 		gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 		gl.glBlendEquation(gl.GL_FUNC_ADD)
 		#size for GL_LINE, and GL_POINT
@@ -168,7 +172,7 @@ class Renderer:
 				i
 			)
 			drawBuffers.append(gl.GL_COLOR_ATTACHMENT0 + i)
-		gl.glDrawBuffers(len(drawBuffers), numpy.array(drawBuffers))
+		gl.glDrawBuffers(len(drawBuffers), glmh.makeArray(drawBuffers, ctypes.c_uint))
 		
 		#attach a depth render buffer
 		renderBuffer = gl.glGenRenderbuffers(1)
@@ -213,7 +217,8 @@ class Renderer:
 		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
 		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_BORDER)
 		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_BORDER)
-		gl.glTexParameterfv(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_BORDER_COLOR, numpy.array([1, 1, 1, 1]))
+		gl.glTexParameterfv(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_BORDER_COLOR,
+			glmh.makeArray(glm.vec4(1, 1, 1, 1), ctypes.c_float))
 		gl.glFramebufferTexture(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT, textureArray, 0)
 		gl.glDrawBuffer(gl.GL_NONE)
 		
@@ -420,19 +425,16 @@ class Renderer:
 	}
 	
 	uniformArgumentSwitch = {
-		"f": lambda value: [numpy.array(value, dtype=numpy.float32)],
-		"v": lambda value: [numpy.array(value, dtype=numpy.float32)],
-		"i": lambda value: [numpy.array(value, dtype=numpy.int32)],
-		"u": lambda value: [numpy.array(value, dtype=numpy.uint32)],
-		"m": lambda value: [gl.GL_FALSE, numpy.array(value, dtype=numpy.float32)],
+		"f": lambda value: [glmh.makeArray(value, ctypes.c_float)],
+		"v": lambda value: [glmh.makeArray(value, ctypes.c_float)],
+		"i": lambda value: [glmh.makeArray(value, ctypes.c_int)],
+		"u": lambda value: [glmh.makeArray(value, ctypes.c_uint)],
+		"m": lambda value: [gl.GL_FALSE, glmh.makeArray(value, ctypes.c_float)],
 	}
 	
 	@classmethod
 	def bindUniform(cls, uniformName, uniformType, value):
 		if uniformType in cls.uniformFunctionSwitch:
-			if type(value) == list and uniformType[0] == "m":
-				value = [numpy.array(v, dtype=numpy.float32) for v in value]
-			
 			cls.uniformFunctionSwitch[uniformType](
 				gl.glGetUniformLocation(cls.currentShader, uniformName),
 				len(value) if type(value) == list else 1,

@@ -24,9 +24,9 @@ class Session:
 	
 	def update(self):
 		#F to stop time, L to run one frame
-		if Controller.handleKey(K_f, DOWN):
+		if Controller.handleKey("FREEZE", DOWN):
 			self.clicker = not self.clicker
-		if self.clicker and not Controller.handleKey(K_l, DOWN):
+		if self.clicker and not Controller.handleKey("STEP_FRAME", DOWN):
 			return
 		
 		self.mainScript.run(self, self.index)

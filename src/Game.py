@@ -25,19 +25,19 @@ class Game:
 
 	def update(self):
 		#check for quitting events
-		if Controller.handleClose() or Controller.handleKey(K_DELETE, DOWN):
+		if Controller.handleClose() or Controller.handleKey("QUIT", DOWN):
 			self.setState(QUIT)
 		
 		#do different things depending on game state
 		elif self.state == MENU:
 			#self.menu.update()
 			#return --> start session
-			if Controller.handleKey(K_RETURN, DOWN):
+			if Controller.handleKey("ENTER", DOWN):
 				self.session = Session(Level1)
 				self.setState(GAME)
 				#Controller.startFocus()
 			#escape --> return to game if session else quit
-			elif Controller.handleKey(K_ESCAPE, DOWN):
+			elif Controller.handleKey("EXIT", DOWN):
 				if self.session:
 					self.setState(GAME)
 					#Controller.startFocus()
@@ -47,7 +47,7 @@ class Game:
 		elif self.state == GAME:
 			self.session.update()
 			#escape --> open menu
-			if Controller.handleKey(K_ESCAPE, DOWN):
+			if Controller.handleKey("EXIT", DOWN):
 				self.setState(MENU)
 				Controller.endFocus()
 		

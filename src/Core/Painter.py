@@ -75,7 +75,6 @@ class Painter:
 		
 		lightTypes = []
 		shadowMats = []
-		spotLights = []
 		for (lightTypeProp, light, transf) in lights:
 			if isinstance(lightTypeProp, PointLight):
 				lightTypes += [1]
@@ -135,6 +134,7 @@ class Painter:
 			],
 			"shadowMats": shadowMats
 		}
+		
 		return lightingDict
 	
 	@staticmethod

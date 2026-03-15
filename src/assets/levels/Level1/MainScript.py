@@ -20,7 +20,7 @@ class MainScript:
 			ragdollTorso = index.get(index.getSing("ragdollkeys")["torso"])
 			ragdollTorso[Transf].setRpos(glm.vec3(
 				ragdollTorso[Transf].cpos.x
-				+ Renderer.dTime * ((Controller.checkKey(K_d)>0)-(Controller.checkKey(K_a)>0)),
+				+ Renderer.dTime * ((Controller.checkKey("DIR_E")>0)-(Controller.checkKey("DIR_W")>0)),
 				ragdollTorso[Transf].cpos.y,
 				min(max(-1, ragdollTorso[Transf].cpos.z), 1)
 			))
@@ -43,7 +43,7 @@ class MainScript:
 			index.deleteObj(obj.key)
 		
 		level.builder = Level2.builder
-		level.builder.build(level, index)
+		level.builder.build(index)
 		level.mainScript = Level2.mainScript
 		
 		return

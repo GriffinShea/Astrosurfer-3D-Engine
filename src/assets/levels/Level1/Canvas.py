@@ -31,7 +31,7 @@ class Canvas:
 			"basicText",
 			"fancyFont",
 			{
-				"colour": WHITE, "alpha": 0.5, "depth": 1,
+				"colour": WHITE, "alpha": 0.5, "depth": -1,
 				"transfMat": glm.scale(
 					glm.translate(glm.mat4(), glm.vec3(-1, -0.75, 0)),
 					glm.vec3(1, 1, 1)
@@ -46,20 +46,23 @@ class Canvas:
 				"basicText",
 				"fancyFont",
 				{
-					"colour": WHITE, "alpha": 0.5, "depth": 1,
+					"colour": WHITE, "alpha": 0.5, "depth": -1,
 					"transfMat": glm.scale(
 						glm.translate(glm.mat4(), glm.vec3(-0.5, 0, 0)),
 						glm.vec3(2, 4, 2)
 					)
 				}
 			)
-		
+			
+		#REVISIT:
+		#	$the depth was 1 before the numpy update but now it must be -1 for text to show
+		#	$the blending function appears to be off, setting alpha to 1 and 0 are both illegible
 		Renderer.drawText(
 			"FPS: " + str(Renderer.getAverageFrameRate()),
 			"basicText",
 			"fancyFont",
 			{
-				"colour": RED, "alpha": 0.5, "depth": 1,
+				"colour": RED, "alpha": 0.5, "depth": -1,
 				"transfMat": glm.scale(glm.translate(glm.mat4(), glm.vec3(0.75, 1, 0)), glm.vec3(1))
 			}
 		)

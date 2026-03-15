@@ -86,9 +86,6 @@ $PA			atten -= spotLightCutoffs[s].y;
 $PA			atten /= spotLightCutoffs[s].x - spotLightCutoffs[s].y;
 $PA			atten = clamp(atten, 0, 1);
 $PA			s++;
-$PA			//REVISIT: This line fixes the spotlight, but the above calculation has broken
-$PA			//With this formulation, the spotlight has a solid barrier instead of fading out
-$PA			atten = ATTENTUATION_RANGE * lightIntensities[i] / length(worldPos - lightPositions[i]);
 $PA		}
 $PA		//calculate diffuse component
 $PA		diffuseCalcs[i] = atten * max(dot(N, L), 0);

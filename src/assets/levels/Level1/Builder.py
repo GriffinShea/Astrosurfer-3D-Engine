@@ -26,12 +26,13 @@ from Core.Props.Graphics.ParticleEffect import ParticleEffect
 
 from Core.Props.Graphics.Lights import Light
 from Core.Props.Graphics.Lights import PointLight
-from Core.Props.Graphics.Lights import SpotLight
+from Core.Props.Graphics.Lights import DirLight
 
 
 class Builder:
 	@classmethod
 	def build(cls, index):
+		
 		#background
 		index.createObj(
 			"background",
@@ -114,7 +115,7 @@ class Builder:
 		rocketkey = index.createObj(
 			"rocket",
 			[
-				Transf(glm.vec3(0, -1, 0), glm.quat(), glm.vec3(2, 6, 2)),
+				Transf(glm.vec3(0, 100, 0), glm.quat(), glm.vec3(2, 6, 2)),
 				Coll(COLLCYLINDER, COLLRIGIDBODY),
 				Rigidbody(60000, 0, glm.pi()/16, 0.3, suffersGravity=False),
 				Jet(glm.vec3(0, 1, 0), 0),
@@ -236,8 +237,8 @@ class Builder:
 	def rocketSteererUpdate(obj, index):
 		rocketTransf = index.get("rocket")[Transf]
 		obj[Transf].setRpos(glm.vec3(
-			rocketTransf.cpos.x + 32 * ((Controller.checkKey(K_d)>0)-(Controller.checkKey(K_a)>0)),
-			rocketTransf.cpos.y + 32 * ((Controller.checkKey(K_w)>0)-(Controller.checkKey(K_s)>0)),
+			rocketTransf.cpos.x + 32 * ((Controller.checkKey("DIR_E")>0)-(Controller.checkKey("DIR_W")>0)),
+			rocketTransf.cpos.y + 32 * ((Controller.checkKey("DIR_N")>0)-(Controller.checkKey("DIR_S")>0)),
 			rocketTransf.cpos.z
 		))
 		

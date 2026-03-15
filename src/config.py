@@ -7,7 +7,6 @@ import random
 import gc
 import json
 
-import numpy
 import attr
 import tracemalloc
 
