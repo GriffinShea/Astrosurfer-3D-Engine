@@ -1,3 +1,11 @@
+Install Python and dependencies listed below and run "py src/main.py" to play.
+
+Controls:
+	A --> move left
+	D --> move right
+With Rocket:
+	WASD --> pick direction
+
 Tested using:
 	Python 3.14.3
 	Windows 10
