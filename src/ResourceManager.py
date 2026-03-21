@@ -102,9 +102,9 @@ class ResourceManager:
 		#	      I
 		#         S
 		#
-		#	0: (B)asic or ps(X) shader
+		#	0: (B)asic vertex calculation or ps(X)-like pixel jiggle effect
 		#	1: (T)riangle or (Q)uad or no tesselation (0)
-		#	2: apply (L)ighting or not (0)
+		#	2: apply (L)ighting or no lighting (0)
 		#	3: (T)exture, (U)niform, (I)nterpolated, or (S)tatic colour
 		#	4: enable (I)nvert colour or not (0)
 		#

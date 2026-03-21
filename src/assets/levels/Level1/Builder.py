@@ -28,6 +28,8 @@ from Core.Props.Graphics.Lights import Light
 from Core.Props.Graphics.Lights import PointLight
 from Core.Props.Graphics.Lights import DirLight
 
+from Core.Systems.Physics.rb import rb
+
 
 class Builder:
 	@classmethod
@@ -50,7 +52,7 @@ class Builder:
 		index.createObj(
 			"background",
 			[
-				Transf(glm.vec3(0, 500, 16), glm.quat(), glm.vec3(1024, 2048, 1)),
+				Transf(glm.vec3(0, 1500, 16), glm.quat(), glm.vec3(2048, 4096, 1)),
 				Rend(True, "unLitTexture", {"tex": "purpleSky", "uvScale": glm.vec2(17, 33)}),
 				Model("plane", False)
 			]
@@ -79,11 +81,14 @@ class Builder:
 			glm.vec3(0, 0, 0), glm.angleAxis(glm.pi(), glmh.yUnit()), 4,
 			True
 		)
+		index.get(ragdollkeys["torso"])[Coll].postcollide = cls.resetTimer
+		index.setSing("sinceLastColl", 0)
 		index.addProp(ragdollkeys["leftarmbot"], Attractor(righthandlekey, 1000, 2, 100))
 		index.get(ragdollkeys["leftarmbot"])[Coll].postcollide = cls.attachRocketHandle
 		index.addProp(ragdollkeys["rightarmbot"], Attractor(lefthandlekey, 1000, 2, 100))
 		index.get(ragdollkeys["rightarmbot"])[Coll].postcollide = cls.attachRocketHandle
 		index.setSing("ragdollkeys", ragdollkeys)
+		
 		
 		#add a camera attached to the player
 		camerakey = index.createObj(
@@ -109,26 +114,31 @@ class Builder:
 		ArrowFactory.create(index, "guide", 1, index.getSing("rocketkey"))
 		
 		#create asteroid spawners
-		for i in range(-4, 5, 1):
+		for i in range(-6, 7, 1):
 			SpawnerFactory.createSpawner(index, "spawner", glm.vec3(i*16, -128, 0))
 		
 		return
 	
 	@classmethod
 	def fixCameraPos(cls, obj, index):
+		torso = index.get(index.getSing("ragdollkeys")["torso"])
 		obj[Transf].setRpos(glm.vec3(
 			index.get(index.getSing("ragdollkeys")["torso"])[Transf].cpos.x,
 			index.get(index.getSing("ragdollkeys")["torso"])[Transf].cpos.y,
-			-32
+			max(-20 - index.getSing("sinceLastColl")*8, -60)
 		))
 		return
-	
+	@classmethod
+	def resetTimer(cls, index, collision):
+		if "asteroid" in collision[1]:
+			index.setSing("sinceLastColl", 0)
+		return
 	@staticmethod
 	def createRocket(index):
 		rocketkey = index.createObj(
 			"rocket",
 			[
-				Transf(glm.vec3(0, 100, 0), glm.quat(), glm.vec3(2, 6, 2)),
+				Transf(glm.vec3(0, 1000, 0), glm.quat(), glm.vec3(2, 6, 2)),
 				Coll(COLLCYLINDER, COLLRIGIDBODY),
 				Rigidbody(60000, 0, glm.pi()/16, 0.3, suffersGravity=False),
 				Jet(glm.vec3(0, 1, 0), 0),

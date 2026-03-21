@@ -1,19 +1,5 @@
 from config import *
 
-CONTROLSMAPPING = {
-	"DIR_N": K_w,
-	"DIR_E": K_d,
-	"DIR_S": K_s,
-	"DIR_W": K_a,
-	
-	"FREEZE": K_f,
-	"STEP_FRAME": K_l,
-	
-	"EXIT": K_ESCAPE,
-	"ENTER": K_RETURN,
-	"QUIT": K_DELETE,
-}
-
 class Controller:
 	inputDict = {}
 	inputDict["CLOSE"] = False

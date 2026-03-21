@@ -43,8 +43,8 @@ class SpawnerFactory:
 				index,
 				obj[Transf].cpos,
 				transf.cori * glm.vec3(
-					(random.random() - 0.5) / 2,
-					(8+random.random()*16)/8,
+					(random.random() - 0.5),
+					(8+random.random()*16)/12,
 					(random.random() - 0.5)
 				)
 			)

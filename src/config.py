@@ -25,9 +25,22 @@ import glmh
 
 from constants import *
 
-#game settings
+#controller settings
 MOUSE_SENSITIVITY = glm.vec2(60, 30)
 INVERT_Y = False
+CONTROLSMAPPING = {
+	"DIR_N": K_w,
+	"DIR_E": K_d,
+	"DIR_S": K_s,
+	"DIR_W": K_a,
+	
+	"FREEZE": K_f,
+	"STEP_FRAME": K_l,
+	
+	"EXIT": K_ESCAPE,
+	"ENTER": K_RETURN,
+	"QUIT": K_DELETE,
+}
 
 #game engine constants
 COLLISION_MAX_ITERATIONS = 8
@@ -46,7 +59,7 @@ FULLSCREEN = False
 if FULLSCREEN:
 	WINDOW_DIMS = (1920, 1080)
 else:
-	WINDOW_DIMS = (800, 600)
+	WINDOW_DIMS = (1280, 720)
 FRAME_BUFFER_DIMS = (320, 240)
 FRAME_BUFFER_DIMS = (640, 480)
 FRAME_BUFFER_DIMS = (1280, 960)

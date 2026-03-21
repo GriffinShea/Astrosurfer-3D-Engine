@@ -18,6 +18,7 @@ class MainScript:
 		#ragdoll controls/update
 		if index.getSing("handsOnRocket") < 2:
 			ragdollTorso = index.get(index.getSing("ragdollkeys")["torso"])
+			index.setSing("sinceLastColl", index.getSing("sinceLastColl") + Renderer.dTime)
 			ragdollTorso[Transf].setRpos(glm.vec3(
 				ragdollTorso[Transf].cpos.x
 				+ Renderer.dTime * ((Controller.checkKey("DIR_E")>0)-(Controller.checkKey("DIR_W")>0)),
