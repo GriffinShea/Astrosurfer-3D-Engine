@@ -1,6 +1,10 @@
 Install Python and dependencies listed below and run "py src/main.py" to play.
 
 Controls:
+	ENTER/RETURN --> Start game/restart from pause
+	ESCAPE --> Pause/unpause
+	DELETE --> Quit
+
 	A --> move left
 	D --> move right
 With Rocket:
